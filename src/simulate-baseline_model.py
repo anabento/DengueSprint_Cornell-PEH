@@ -112,7 +112,7 @@ output['epiweek_week'] = output['date'].apply(lambda x: int(str(Week.fromdate(x)
 for ew in output['epiweek_week'].unique():
     for uf in output['adm_1'].unique():
         # Median
-        output.loc[((output['epiweek_week'] == ew) & (output['adm_1'] == uf)), 'preds'] = results.loc[((results['uf'] == uf) & (results['epiweek_week'] == ew) & (results['quantile'] == 0.5)), 'casos'].values
+        output.loc[((output['epiweek_week'] == ew) & (output['adm_1'] == uf)), 'pred'] = results.loc[((results['uf'] == uf) & (results['epiweek_week'] == ew) & (results['quantile'] == 0.5)), 'casos'].values
         # 95% confint
         output.loc[((output['epiweek_week'] == ew) & (output['adm_1'] == uf)), 'lower_95'] = results.loc[((results['uf'] == uf) & (results['epiweek_week'] == ew) & (results['quantile'] == 0.025)), 'casos'].values
         output.loc[((output['epiweek_week'] == ew) & (output['adm_1'] == uf)), 'upper_95'] = results.loc[((results['uf'] == uf) & (results['epiweek_week'] == ew) & (results['quantile'] == 0.975)), 'casos'].values
