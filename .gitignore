@@ -169,4 +169,4 @@ data/raw/dengue.csv
 .DS_Store
 
 # API KEY
-API_KEY
+API_KEY.env
