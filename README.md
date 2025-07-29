@@ -47,9 +47,9 @@ Only the `dengue.csv` file made available by the mosqlimate project was used. Th
 The model presents a simple baseline model which we will use to benchmark future DENV modeling efforts.
 
 1. The raw data (`dengue.csv`) were aggregated to the level of the 27 Brazilian federative units.
-2. The data from 2010-2025 were grouped by week number (1-53), resulting in a sample consiting of 15 DENV incidence counts per week number and per Brazilian UF. Let `I_{i,j}` denote DENV incidence in UF `i` during week `j`.
-3. A negative binomial distribution with parameters r (number of succeses) and p (probability of succes) was fit to each `I_{i,j}`.
-4. A prediction `I^{*}_{i,j}` was then made using the fitted negative binomial distribution.
+2. The data from 2010-2025 were grouped by week number (1-53), resulting in a sample consiting of 15 DENV incidence counts per week number and per Brazilian UF. Let `I_{i,j}` denote the distribution of DENV incidence in UF `i` during week `j` across the available training seasons.
+3. A negative binomial distribution with parameters `r_{i,j}` (number of succeses) and `p_{i,j}` (probability of succes) was fit to the empirical distribution `I_{i,j}`.
+4. The predictive distribution `I^{*}_{i,j} ~ NegBinom(r_{i,j}, p_{i,j})` was then used to generate the forecasted quantiles for submission.
 
 ## References
 
