@@ -19,7 +19,7 @@ from epiweeks import Week
 ##############
 
 # index of validation experiment
-validation_idx = 1
+validation_idx = 3
 
 # desired quantiles
 quantiles = [0.025, 0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 0.975]
@@ -105,7 +105,7 @@ end_date = pd.to_datetime(f'{end_predict_year}-W{end_predict_epiweek:02d}-1', fo
 dates = pd.date_range(start=start_date, end=end_date, freq='W-MON')
 # pre-allocate an output dataframe containing the cartesian product of all spatial units and dates as index & the quantiles/median as columns
 index = pd.MultiIndex.from_product([dates, ufs], names=['date', 'adm_1'])
-output = pd.DataFrame(index=index, columns=['lower_95', 'upper_95', 'lower_90', 'upper_90', 'lower_80', 'upper_80', 'lower_50', 'upper_50', 'preds'])
+output = pd.DataFrame(index=index, columns=['lower_95', 'upper_95', 'lower_90', 'upper_90', 'lower_80', 'upper_80', 'lower_50', 'upper_50', 'pred'])
 output = output.reset_index()
 output['epiweek_week'] = output['date'].apply(lambda x: int(str(Week.fromdate(x).year * 100 + Week.fromdate(x).week)[-2:]))
 # fill the dataframe
