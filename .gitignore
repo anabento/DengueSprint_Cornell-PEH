@@ -164,3 +164,6 @@ Demo Notebooks/dengue.csv.gz
 
 # Large datasets
 data/raw/dengue.csv
+
+# Macbook
+.DS_Store
