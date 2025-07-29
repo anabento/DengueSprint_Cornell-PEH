@@ -24,10 +24,10 @@ Cornell University, College of Veterinary Medicine, Department of Public and Eco
 
 ## Libraries and Dependencies
 
-Setup/update the `environment`: All dependencies needed to run the scripts are collected in the conda `DengueSprint_Cornell-PEH.yml` file. To set up the environment,
+Setup/update the `environment`: All dependencies needed to run the scripts are collected in the conda `DENGUE_SPRINT.yml` file. To set up the environment,
 
   ```bash
-  conda env create -f DengueSprint_Cornell-PEH.yml
+  conda env create -f DENGUE_SPRINT.yml
   conda activate DENGUE_SPRINT
   ```
 
