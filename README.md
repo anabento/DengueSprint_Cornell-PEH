@@ -7,7 +7,6 @@ Cornell University, College of Veterinary Medicine, Department of Public and Eco
 - Tijs Alleman
 - Ana Bento
 - Laura Alexander
-- Siyu Chen
 
 ## Repository structure
 
@@ -55,9 +54,9 @@ The model presents a simple baseline model which we will use to benchmark future
 
 NA.
 
-## Data Usage Restroctions
+## Data Usage Restrictions
 
-NA.
+Only data up to EW25 were used to generate predictions from EW 41 of the same year to EW 40 of the next year.
 
 ## Predictive uncertainty
 
