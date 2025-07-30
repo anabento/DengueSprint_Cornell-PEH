@@ -167,3 +167,6 @@ data/raw/dengue.csv
 
 # Macbook
 .DS_Store
+
+# API KEY
+API_KEY.env
