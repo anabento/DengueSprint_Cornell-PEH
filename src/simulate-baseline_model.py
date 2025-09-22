@@ -19,7 +19,7 @@ from scipy.optimize import minimize
 ## settings ##
 ##############
 
-validation_idx = 3  # None (forecast), 1, 2 or 3 (validation)
+validation_idx = None  # None (forecast), 1, 2 or 3 (validation)
 end_train_epiweek = 25
 start_predict_epiweek = 41
 end_predict_epiweek = 40
@@ -34,7 +34,7 @@ if validation_idx:
     end_predict_year = 2021 + validation_idx + 1
 else:
     # set ID and training dates for forecast 
-    ID = f'prediction'
+    ID = f'forecast'
     validation_idx = 4
     end_train_year = 2021 + validation_idx
     start_predict_year = 2021 + validation_idx
