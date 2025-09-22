@@ -1,5 +1,5 @@
 """
-This script simulates a baseline model
+This script simulates a baseline model for the infodengue-mosqlimate challenge; the model is a negative binomial distribution fit to the weekly dengue incidence from 2010-2025
 """
 
 __author__      = "Tijs Alleman"
@@ -8,30 +8,40 @@ __copyright__   = "Copyright (c) 2025 by T.W. Alleman, Bento Lab, Cornell Univer
 import os
 import numpy as np
 import pandas as pd
+from epiweeks import Week
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from scipy.stats import nbinom
 from scipy.optimize import minimize
-from epiweeks import Week
+
 
 ##############
 ## settings ##
 ##############
 
-# index of validation experiment
-validation_idx = 3
+validation_idx = None  # None (forecast), 1, 2 or 3 (validation)
+end_train_epiweek = 25
+start_predict_epiweek = 41
+end_predict_epiweek = 40
+
+if validation_idx:
+    # check user input
+    assert validation_idx in [1,2,3], "'validation' must be equal to 1, 2 or 3."
+    # set ID and training dates for validation
+    ID = f'validation_{validation_idx}'
+    end_train_year = 2021 + validation_idx
+    start_predict_year = 2021 + validation_idx
+    end_predict_year = 2021 + validation_idx + 1
+else:
+    # set ID and training dates for forecast 
+    ID = f'forecast'
+    validation_idx = 4
+    end_train_year = 2021 + validation_idx
+    start_predict_year = 2021 + validation_idx
+    end_predict_year = 2021 + validation_idx + 1
 
 # desired quantiles
 quantiles = [0.025, 0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 0.975]
-
-# derived variables
-ID = f'validation_{validation_idx}'
-end_train_epiweek = 25
-end_train_year = 2021 + validation_idx
-start_predict_epiweek = 41
-start_predict_year = 2021 + validation_idx
-end_predict_epiweek = 40
-end_predict_year = 2021 + validation_idx + 1
 
 
 #############################################
@@ -39,13 +49,13 @@ end_predict_year = 2021 + validation_idx + 1
 #############################################
 
 # log likelihood
-def negbinom_log_likelihood(params):
+def negbinom_log_likelihood(params, x, weights):
     # unpack parameters
     r, p = params
     # keep them in valid range
     if r <= 0 or p <= 0 or p >= 1:
         return np.inf
-    return -np.sum(nbinom.logpmf(x, r, p))
+    return -np.sum(weights * nbinom.logpmf(x, r, p))
 
 # load data
 data = pd.read_csv('../data/raw/dengue.csv', dtype={'epiweek': str})
@@ -70,16 +80,24 @@ results= []
 for uf in ufs:
     for epiweek_week in epiweek_weeks:
         # get data
-        x = data[((data['uf'] == uf) & (data['epiweek_week'] == epiweek_week))]['casos']
-        # method of moments estimate for r and p
-        mean_x = np.mean(x)
-        var_x = np.var(x, ddof=1)
+        subset = data[((data['uf'] == uf) & (data['epiweek_week'] == epiweek_week))]
+        counts = subset['casos']
+        years = subset['epiweek_year'].values
+        # parametrise neg. expon. weighing of historical seasons
+        lambda_ = 0.0 # uniform weighing
+        max_year = subset['epiweek_year'].max()
+        weights = np.exp(-lambda_ * (max_year - years))
+        weights = weights / weights.sum()
+        # method of moments estimate for r and p as initial guess
+        mean_x = np.mean(counts)
+        var_x = np.var(counts, ddof=1)
         p0 = mean_x / var_x
         r0 = mean_x * p0 / (1 - p0)
-        p0 = max(min(p0, 0.99), 0.01)  # keep p0 in valid range
-        r0 = max(r0, 0.1)
+        p0 = max(min(p0, 0.999), 0.001)  # keep p0 in valid range
+        r0 = max(r0, 10)
         # fit distribution
-        res = minimize(negbinom_log_likelihood, x0=[r0, p0], bounds=[(1e-3, None), (1e-3, 1-1e-3)])
+        res = minimize(lambda params: negbinom_log_likelihood(params, counts, weights),
+                       x0=[r0, p0], bounds=[(1e-9, None), (1e-9, 1-1e-9)])
         r_hat, p_hat = res.x
         # simulate desired quantiles
         q_values = nbinom.ppf(quantiles, r_hat, p_hat)
@@ -128,7 +146,7 @@ for ew in output['epiweek_week'].unique():
 # remove 'epiweek_week' column
 output = output.drop('epiweek_week', axis=1)
 # save the result
-output.to_csv(f'../data/interim/baseline_model-{ID}.csv', index=False)
+output.to_csv(f'../data/interim/baseline_model-{ID}.csv')
 
 
 ##########################
