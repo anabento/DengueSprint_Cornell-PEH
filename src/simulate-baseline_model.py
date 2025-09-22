@@ -123,14 +123,14 @@ end_date = pd.to_datetime(f'{end_predict_year}-W{end_predict_epiweek:02d}-1', fo
 dates = pd.date_range(start=start_date, end=end_date, freq='W-SUN')
 # pre-allocate an output dataframe containing the cartesian product of all spatial units and dates as index & the quantiles/median as columns
 index = pd.MultiIndex.from_product([dates, ufs], names=['date', 'adm_1'])
-output = pd.DataFrame(index=index, columns=['lower_95', 'upper_95', 'lower_90', 'upper_90', 'lower_80', 'upper_80', 'lower_50', 'upper_50', 'preds'])
+output = pd.DataFrame(index=index, columns=['lower_95', 'upper_95', 'lower_90', 'upper_90', 'lower_80', 'upper_80', 'lower_50', 'upper_50', 'pred'])
 output = output.reset_index()
 output['epiweek_week'] = output['date'].apply(lambda x: int(str(Week.fromdate(x).year * 100 + Week.fromdate(x).week)[-2:]))
 # fill the dataframe
 for ew in output['epiweek_week'].unique():
     for uf in output['adm_1'].unique():
         # Median
-        output.loc[((output['epiweek_week'] == ew) & (output['adm_1'] == uf)), 'preds'] = results.loc[((results['uf'] == uf) & (results['epiweek_week'] == ew) & (results['quantile'] == 0.5)), 'casos'].values
+        output.loc[((output['epiweek_week'] == ew) & (output['adm_1'] == uf)), 'pred'] = results.loc[((results['uf'] == uf) & (results['epiweek_week'] == ew) & (results['quantile'] == 0.5)), 'casos'].values
         # 95% confint
         output.loc[((output['epiweek_week'] == ew) & (output['adm_1'] == uf)), 'lower_95'] = results.loc[((results['uf'] == uf) & (results['epiweek_week'] == ew) & (results['quantile'] == 0.025)), 'casos'].values
         output.loc[((output['epiweek_week'] == ew) & (output['adm_1'] == uf)), 'upper_95'] = results.loc[((results['uf'] == uf) & (results['epiweek_week'] == ew) & (results['quantile'] == 0.975)), 'casos'].values
