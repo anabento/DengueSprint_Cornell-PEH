@@ -100,9 +100,9 @@ results = pd.concat(results, axis=0)
 #################################################
 
 # convert start- and end epiweek of the "prediction" to a daterange
-start_date = pd.to_datetime(f'{start_predict_year}-W{start_predict_epiweek:02d}-1', format='%G-W%V-%u')
+start_date = pd.to_datetime(f'{start_predict_year}-W{start_predict_epiweek-1:02d}-1', format='%G-W%V-%u')
 end_date = pd.to_datetime(f'{end_predict_year}-W{end_predict_epiweek:02d}-1', format='%G-W%V-%u')
-dates = pd.date_range(start=start_date, end=end_date, freq='W-MON')
+dates = pd.date_range(start=start_date, end=end_date, freq='W-SUN')
 # pre-allocate an output dataframe containing the cartesian product of all spatial units and dates as index & the quantiles/median as columns
 index = pd.MultiIndex.from_product([dates, ufs], names=['date', 'adm_1'])
 output = pd.DataFrame(index=index, columns=['lower_95', 'upper_95', 'lower_90', 'upper_90', 'lower_80', 'upper_80', 'lower_50', 'upper_50', 'pred'])
